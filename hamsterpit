@@ -6,7 +6,7 @@ SCRIPTNAME="$0"
 # resides.
 SCRIPTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-CMANAGER=docker
+CMANAGER=podman
 
 IMAGENAME=hamsterpit
 
