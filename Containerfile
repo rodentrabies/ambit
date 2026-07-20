@@ -1,10 +1,13 @@
 FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
     git \
-    curl \
-    ca-certificates \
     less \
+    curl \
+    cmake \
+    pkg-config \
+    ca-certificates \
     python3 \
     python3-pip \
     python3-venv \
