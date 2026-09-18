@@ -8,15 +8,15 @@ SCRIPTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 CMANAGER=podman
 
-IMAGENAME=hamsterpit
+IMAGENAME=ambit
 
-hamsterpit_usage () {
+ambit_usage () {
     cat <<EOF
 Usage: $SCRIPTNAME [COMMAND]
 
-Run your coding agent of choice inside a container where it can only access the
-given project directory. The review and source control operations are assumed to
-happen outside of the container.
+Run Claude Code inside a container where it can only access the given project
+directories. The review and source control operations are assumed to happen
+outside of the container.
 
 Commands:
 
@@ -36,15 +36,15 @@ Examples:
 EOF
 }
 
-hamsterpit_build () {
+ambit_build () {
     # Use `--no-cache` to make sure we always get the most recent
     # packages if rebuilding explicitly.
     $CMANAGER build --no-cache -t $IMAGENAME $SCRIPTDIR
 }
 
-hamsterpit_run () {
+ambit_run () {
     # Build the image if it does not exist.
-    $CMANAGER images -q $IMAGENAME | grep -q . || hamsterpit_build
+    $CMANAGER images -q $IMAGENAME | grep -q . || ambit_build
     # Ensure state/config directories exist.
     mkdir -p .claude .gemini
     # Build volume mounts and container name from all provided paths.
@@ -62,23 +62,23 @@ hamsterpit_run () {
            $volumes \
            -v "$(pwd)/.gemini":/root/.gemini \
            -v "$(pwd)/.claude":/root/.claude \
-           --name "hamsterpit-$container_id" \
+           --name "ambit-$container_id" \
            $IMAGENAME
 }
 
 case "$1" in
     build)
-        hamsterpit_build
+        ambit_build
         ;;
     run)
         shift
-        hamsterpit_run "$@"
+        ambit_run "$@"
         ;;
     help)
-        hamsterpit_help
+        ambit_usage
         ;;
     *)
-        hamsterpit_usage
+        ambit_usage
         exit 1
         ;;
 esac
