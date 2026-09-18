@@ -44,8 +44,8 @@ ambit_build () {
 ambit_run () {
     # Build the image if it does not exist.
     $CMANAGER images -q $IMAGENAME | grep -q . || ambit_build
-    # Ensure state/config directories exist.
-    mkdir -p .claude .gemini
+    # Ensure the state/config directory exists.
+    mkdir -p .claude
     # Build volume mounts and container name from all provided paths.
     local volumes=""
     for path in "$@"; do
@@ -63,7 +63,6 @@ ambit_run () {
     # `/workdir`.
     $CMANAGER run -it --rm \
            $volumes \
-           -v "$(pwd)/.gemini":/root/.gemini \
            -v "$(pwd)/.claude":/root/.claude \
            --name "ambit-$container_id" \
            $IMAGENAME
