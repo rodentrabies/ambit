@@ -12,26 +12,25 @@ IMAGENAME=ambit
 
 ambit_usage () {
     cat <<EOF
-Usage: $SCRIPTNAME [COMMAND]
+Usage: $SCRIPTNAME [OPTION]... [PROJECT]...
 
 Run Claude Code inside a container where it can only access the given project
-directories. The review and source control operations are assumed to happen
-outside of the container.
+directories. The container image with Claude Code and additional tooling will
+be built automatically if it does not exist yet. Review, testing and source
+control are assumed to happen outside of the container.
 
-Commands:
+Options:
 
-    run [PROJECT]+  - run the container and give it access to one or more
-                      project directories; automatically builds the image
-                      containing the agents and dependencies, if it does not
-                      exist
+    -r, --rebuild   - rebuild the image before running, even if it already
+                      exists
 
-    build           - build an image containing the agents and dependencies
-
-    help            - show this message
+    -h, --help      - show this message
 
 Examples:
 
-    $SCRIPTNAME run /path/to/project1 /path/to/project2
+    $SCRIPTNAME /path/to/project1 /path/to/project2
+
+    $SCRIPTNAME --rebuild /path/to/project
 
 EOF
 }
@@ -50,7 +49,11 @@ ambit_run () {
     # Build volume mounts and container name from all provided paths.
     local volumes=""
     for path in "$@"; do
-        host_path="$(realpath "$path")"
+        local host_path
+        if ! host_path="$(realpath -e "$path" 2>/dev/null)" || [ ! -d "$host_path" ]; then
+            echo "$SCRIPTNAME: not an existing directory: $path" >&2
+            exit 1
+        fi
         local container_path="$(basename "$host_path")"
         volumes="$volumes -v $host_path:/workspace/$container_path"
     done
@@ -66,19 +69,33 @@ ambit_run () {
            $IMAGENAME
 }
 
-case "$1" in
-    build)
-        ambit_build
-        ;;
-    run)
-        shift
-        ambit_run "$@"
-        ;;
-    help)
-        ambit_usage
-        ;;
-    *)
-        ambit_usage
-        exit 1
-        ;;
-esac
+# Collect options and project paths, in any order.
+rebuild=0
+projects=()
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help)
+            ambit_usage
+            exit 0
+            ;;
+        -r|--rebuild)
+            rebuild=1
+            ;;
+        -*)
+            echo "$SCRIPTNAME: unknown option: $1" >&2
+            ambit_usage >&2
+            exit 1
+            ;;
+        *)
+            projects+=("$1")
+            ;;
+    esac
+    shift
+done
+
+if [ $rebuild -eq 1 ]; then
+    ambit_build || exit 1
+fi
+
+ambit_run "${projects[@]}"
