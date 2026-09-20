@@ -50,7 +50,7 @@ ambit_run () {
     local volumes=""
     for path in "$@"; do
         local host_path
-        if ! host_path="$(realpath -e "$path" 2>/dev/null)" || [ ! -d "$host_path" ]; then
+        if ! host_path="$(realpath "$path" 2>/dev/null)" || [ ! -d "$host_path" ]; then
             echo "$SCRIPTNAME: not an existing directory: $path" >&2
             exit 1
         fi
