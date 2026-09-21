@@ -1,10 +1,8 @@
 # Ambit
 
-> **ambit** /ˈæmbɪt/ *noun*
->
-> The scope, extent, or bounds of something.
->
-> From Latin *ambitus*, "circuit", from *ambire*, "to go round".
+> **ambit** /ˈæmbɪt/ *noun* - the scope, extent, or bounds of
+> something. From Latin *ambitus*, "circuit", from *ambire*, "to go
+> round".
 
 A small tool for running an agent in a container with a narrow view of
 your project, delimited by a filesystem subtree.
