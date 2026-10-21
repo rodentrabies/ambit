@@ -24,6 +24,8 @@ Options:
     -r, --rebuild   - rebuild the image before running, even if it already
                       exists
 
+    -s, --shell     - start Bash instead of Claude Code in the container
+
     -h, --help      - show this message
 
 Examples:
@@ -31,6 +33,8 @@ Examples:
     $SCRIPTNAME /path/to/project1 /path/to/project2
 
     $SCRIPTNAME --rebuild /path/to/project
+
+    $SCRIPTNAME --shell /path/to/project
 
 EOF
 }
@@ -65,11 +69,12 @@ ambit_run () {
            $volumes \
            -v "$(pwd)/.claude":/root/.claude \
            --name "ambit-$container_id" \
-           $IMAGENAME
+           $IMAGENAME \
+           "${command[@]}"
 }
 
-# Collect options and project paths, in any order.
 rebuild=0
+command=()
 projects=()
 
 while [ $# -gt 0 ]; do
@@ -80,6 +85,9 @@ while [ $# -gt 0 ]; do
             ;;
         -r|--rebuild)
             rebuild=1
+            ;;
+        -s|--shell)
+            command=(bash)
             ;;
         -*)
             echo "$SCRIPTNAME: unknown option: $1" >&2

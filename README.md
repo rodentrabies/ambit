@@ -41,6 +41,12 @@ needed. To pick up the most recent packages or a change in the
 
     $ ambit --rebuild path/to/project1
 
+To get a shell inside the container instead of starting the agent,
+for example to inspect or set up the environment, use the
+`-s`/`--shell` option:
+
+    $ ambit --shell path/to/project1
+
 Arguments starting with `-` or `--` are treated as options, everything
 else - as project directories. The order of the arguments does not
 matter, so you can add the `-r`/`--rebuild` flag at the last moment
