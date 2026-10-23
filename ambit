@@ -68,6 +68,7 @@ ambit_run () {
     $CMANAGER run -it --rm \
            $volumes \
            -v "$(pwd)/.claude":/root/.claude \
+           -e CLAUDE_CONFIG_DIR=/root/.claude \
            --name "ambit-$container_id" \
            $IMAGENAME \
            "${command[@]}"
